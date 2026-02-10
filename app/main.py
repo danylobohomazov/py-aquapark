@@ -1,5 +1,6 @@
 # flake8: noqa: E501
 from abc import ABC
+from typing import Any
 
 
 class IntegerRange:
@@ -7,13 +8,15 @@ class IntegerRange:
         self.min_amount = min_amount
         self.max_amount = max_amount
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, owner: Any, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance: Any, owner: Any) -> Any:
+        if instance is None:
+            return self
         return getattr(instance, self.protected_name)
 
-    def __set__(self, instance, value):
+    def __set__(self, instance: Any, value: int) -> None:
         if not isinstance(value, int):
             raise TypeError()
         if value < self.min_amount or value > self.max_amount:
@@ -22,7 +25,7 @@ class IntegerRange:
 
 
 class Visitor:
-    def __init__(self, name: str, age: int, weight: int, height: int):
+    def __init__(self, name: str, age: int, weight: int, height: int) -> None:
         self.name = name
         self.age = age
         self.weight = weight
@@ -30,7 +33,7 @@ class Visitor:
 
 
 class SlideLimitationValidator(ABC):
-    def __init__(self, age: int, weight: int, height: int):
+    def __init__(self, age: int, weight: int, height: int) -> None:
         self.age = age
         self.weight = weight
         self.height = height
@@ -61,5 +64,5 @@ class Slide:
         try:
             self.limitation_class(visitor.age, visitor.weight, visitor.height)
             return True
-        except (TypeError, ValueError) as e:
+        except (TypeError, ValueError):
             return False
